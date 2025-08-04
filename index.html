@@ -348,6 +348,11 @@
             color: #991b1b;
         }
 
+        .config-status.testing {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
         .debug-info {
             background-color: #f3f4f6;
             border: 1px solid #d1d5db;
@@ -359,6 +364,29 @@
             white-space: pre-wrap;
             max-height: 200px;
             overflow-y: auto;
+        }
+
+        .config-help {
+            background-color: #eff6ff;
+            border: 1px solid #dbeafe;
+            border-radius: 4px;
+            padding: 12px;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #1e40af;
+        }
+
+        .config-help h4 {
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .config-help ol {
+            margin-left: 16px;
+        }
+
+        .config-help li {
+            margin-bottom: 4px;
         }
     </style>
 </head>
@@ -375,6 +403,20 @@
                 <button id="testConnection" class="btn btn-primary" style="width: auto; padding: 8px 16px; height: auto; font-size: 14px;">Test Koneksi</button>
                 <div id="connectionStatus" class="config-status disconnected">Belum Terhubung</div>
             </div>
+            
+            <!-- Help section -->
+            <div class="config-help">
+                <h4>Cara Setup Google Apps Script:</h4>
+                <ol>
+                    <li>Buka <a href="https://script.google.com" target="_blank">script.google.com</a></li>
+                    <li>Buat project baru dan copy kode Google Apps Script</li>
+                    <li>Ganti SPREADSHEET_ID dengan ID Google Sheets Anda</li>
+                    <li>Deploy sebagai Web App dengan akses "Anyone"</li>
+                    <li>Copy URL Web App dan masukkan di atas</li>
+                    <li>Klik "Test Koneksi" untuk memverifikasi</li>
+                </ol>
+            </div>
+            
             <div id="debugInfo" class="debug-info hidden"></div>
         </div>
 
@@ -599,6 +641,9 @@
             if (status === 'connected') {
                 statusEl.textContent = 'Terhubung';
                 statusEl.className = 'config-status connected';
+            } else if (status === 'testing') {
+                statusEl.textContent = 'Testing...';
+                statusEl.className = 'config-status testing';
             } else {
                 statusEl.textContent = 'Belum Terhubung';
                 statusEl.className = 'config-status disconnected';
@@ -615,56 +660,94 @@
             }
 
             try {
-                setLoading(true);
+                updateConnectionStatus('testing');
+                elements.testConnection.disabled = true;
+                
                 logDebug('Testing connection to:', { url });
                 
                 // Clear debug info
                 elements.debugInfo.classList.remove('hidden');
                 elements.debugInfo.textContent = '';
                 
-                // Try a simple POST request instead of GET for better compatibility
-                const testData = {
-                    action: 'searchStudent',
-                    noInduk: 'test-connection'
-                };
+                // First try a simple GET request
+                logDebug('Attempting GET request...');
                 
-                logDebug('Sending test request with data:', testData);
-                
-                const response = await fetch(url, {
-                    method: 'POST',
+                const getResponse = await fetch(url + '?action=test', {
+                    method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(testData)
+                        'Accept': 'application/json',
+                    }
                 });
                 
-                logDebug('Response received:', {
-                    status: response.status,
-                    statusText: response.statusText,
-                    headers: Object.fromEntries(response.headers.entries())
+                logDebug('GET Response received:', {
+                    status: getResponse.status,
+                    statusText: getResponse.statusText,
+                    headers: Object.fromEntries(getResponse.headers.entries())
                 });
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                if (getResponse.ok) {
+                    const getResult = await getResponse.json();
+                    logDebug('GET Response JSON:', getResult);
+                    
+                    // Now try POST request
+                    logDebug('Attempting POST request...');
+                    
+                    const testData = {
+                        action: 'test'
+                    };
+                    
+                    const postResponse = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(testData)
+                    });
+                    
+                    logDebug('POST Response received:', {
+                        status: postResponse.status,
+                        statusText: postResponse.statusText,
+                        headers: Object.fromEntries(postResponse.headers.entries())
+                    });
+                    
+                    if (postResponse.ok) {
+                        const postResult = await postResponse.json();
+                        logDebug('POST Response JSON:', postResult);
+                        
+                        gasWebAppUrl = url;
+                        localStorage.setItem('gasWebAppUrl', url);
+                        updateConnectionStatus('connected');
+                        showToast('Koneksi berhasil! GET dan POST berfungsi.');
+                    } else {
+                        throw new Error(`POST failed: HTTP ${postResponse.status}: ${postResponse.statusText}`);
+                    }
+                } else {
+                    throw new Error(`GET failed: HTTP ${getResponse.status}: ${getResponse.statusText}`);
                 }
-                
-                const result = await response.json();
-                logDebug('Response JSON:', result);
-                
-                gasWebAppUrl = url;
-                localStorage.setItem('gasWebAppUrl', url);
-                updateConnectionStatus('connected');
-                showToast('Koneksi berhasil!');
                 
             } catch (error) {
                 logDebug('Connection test failed:', {
                     error: error.message,
                     stack: error.stack
                 });
-                showToast('Gagal terhubung: ' + error.message, 'error');
+                
+                let errorMessage = error.message;
+                
+                // Provide more specific error messages
+                if (error.message.includes('Failed to fetch')) {
+                    errorMessage = 'Gagal terhubung. Pastikan:\n1. URL Google Apps Script benar\n2. Web App sudah di-deploy dengan akses "Anyone"\n3. Tidak ada pemblokir CORS di browser';
+                } else if (error.message.includes('CORS')) {
+                    errorMessage = 'Error CORS. Pastikan Google Apps Script Web App diatur dengan akses "Anyone"';
+                } else if (error.message.includes('404')) {
+                    errorMessage = 'URL tidak ditemukan. Periksa kembali URL Google Apps Script Web App';
+                } else if (error.message.includes('403')) {
+                    errorMessage = 'Akses ditolak. Pastikan Web App di-deploy dengan akses "Anyone"';
+                }
+                
+                showToast(errorMessage, 'error');
                 updateConnectionStatus('disconnected');
             } finally {
-                setLoading(false);
+                elements.testConnection.disabled = false;
             }
         }
 
@@ -717,7 +800,9 @@
         function setLoading(isLoading) {
             const buttons = document.querySelectorAll('button');
             buttons.forEach(btn => {
-                btn.disabled = isLoading;
+                if (btn.id !== 'testConnection') { // Keep test connection button always enabled
+                    btn.disabled = isLoading;
+                }
                 if (isLoading) {
                     btn.classList.add('loading');
                 } else {
@@ -729,11 +814,14 @@
 
         function updateButtonStates() {
             const hasStudent = selectedStudent !== null;
+            const hasConnection = gasWebAppUrl !== '';
             
             elements.nisn.disabled = !hasStudent;
             elements.namaIjazah.disabled = !hasStudent;
             elements.ttl.disabled = !hasStudent;
             elements.waliIjazah.disabled = !hasStudent;
+            
+            elements.searchBtn.disabled = !hasConnection;
             
             elements.cekBerkasBtn.disabled = !hasStudent || !selectedStudent?.cekBerkas;
             elements.cekBerkasBtn.className = `btn btn-full ${
@@ -750,8 +838,8 @@
                 showErrorCheckboxes ? 'btn-danger' : 'btn-secondary'
             }`;
             
-            elements.saveBtn.disabled = !hasStudent;
-            elements.deleteBtn.disabled = !hasStudent;
+            elements.saveBtn.disabled = !hasStudent || !hasConnection;
+            elements.deleteBtn.disabled = !hasStudent || !hasConnection;
             
             // Keep connection button always enabled
             elements.testConnection.disabled = false;
