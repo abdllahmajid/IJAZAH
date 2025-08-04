@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Ijazah</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 24px 16px;
+            min-height: 100vh;
+        }
+
+        .header {
+            position: relative;
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            width: 301.642px;
+            height: 46.592px;
+            background: linear-gradient(135deg, #137b2b, #0f6526);
+            border-radius: 6.3px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 600;
+            color: #000000;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 16.368px;
+            color: rgba(0, 0, 0, 0.7);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            height: 39px;
+            border: 1.889px solid rgba(0, 0, 0, 0.05);
+            border-radius: 6.296px;
+            padding: 8px 12px;
+            font-size: 16px;
+            background-color: #ffffff;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(19, 123, 43, 0.53);
+        }
+
+        .form-input:disabled {
+            background-color: #f5f5f5;
+            color: #999;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 12px;
+            flex-direction: column;
+        }
+
+        @media (min-width: 480px) {
+            .search-container {
+                flex-direction: row;
+            }
+            
+            .search-input {
+                width: 110px;
+            }
+            
+            .search-button {
+                flex: 1;
+            }
+        }
+
+        .search-input {
+            border-color: rgba(19, 123, 43, 0.53) !important;
+        }
+
+        .btn {
+            height: 41px;
+            border: none;
+            border-radius: 6.619px;
+            font-size: 17.211px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 0 16px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background-color: #137b2b;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #0f6526;
+        }
+
+        .btn-secondary {
+            background-color: #f1f1f1;
+            color: rgba(130, 130, 130, 0.95);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #e5e5e5;
+        }
+
+        .btn-danger {
+            background-color: #c74141;
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background-color: #b13636;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .student-info {
+            background-color: #f9f9f9;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .grades-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 24px 0;
+        }
+
+        @media (min-width: 480px) {
+            .grades-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .grade-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grade-label {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.6);
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .grade-input {
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+
+        .status-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 24px 0;
+        }
+
+        .checkbox-list {
+            margin-top: 16px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            height: 39px;
+            border-radius: 6.62px;
+            padding: 0 16px;
+            margin-bottom: 12px;
+            background-color: #f2f2f2;
+        }
+
+        .checkbox-item.error {
+            background-color: #ffdddd;
+        }
+
+        .checkbox-item span {
+            font-size: 16.549px;
+            color: rgba(0, 0, 0, 0.62);
+        }
+
+        .custom-checkbox {
+            width: 21.182px;
+            height: 21.182px;
+            border-radius: 3.972px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 1px solid #c5c5c5;
+            background-color: white;
+        }
+
+        .custom-checkbox.checked {
+            background-color: #c74141;
+            border-color: #c74141;
+        }
+
+        .custom-checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 24px;
+            padding-bottom: 32px;
+        }
+
+        @media (min-width: 480px) {
+            .action-buttons {
+                flex-direction: row;
+            }
+            
+            .action-buttons .btn {
+                flex: 1;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            opacity: 0.7;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #137b2b;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            background: #c74141;
+        }
+
+        .toast.warning {
+            background: #f59e0b;
+        }
+
+        .config-section {
+            background-color: #f9f9f9;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .config-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #374151;
+        }
+
+        .config-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .config-description {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .config-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .config-status.connected {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .config-status.disconnected {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Konfigurasi Connection -->
+        <div class="config-section">
+            <div class="config-title">Konfigurasi Koneksi</div>
+            <div class="config-description">
+                Masukkan URL Google Apps Script Web App Anda:
+            </div>
+            <input type="url" id="gasWebAppUrl" class="config-input" placeholder="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec">
+            <button id="testConnection" class="btn btn-primary" style="width: auto; padding: 8px 16px; height: auto; font-size: 14px;">Test Koneksi</button>
+            <div id="connectionStatus" class="config-status disconnected">Belum Terhubung</div>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">Data Ijazah</div>
+            <h1 class="title">Data Ijazah</h1>
+        </div>
+
+        <!-- Form -->
+        <div class="form-group">
+            <label class="form-label">No Induk</label>
+            <div class="search-container">
+                <input type="text" id="searchTerm" class="form-input search-input" placeholder="Induk">
+                <button id="searchBtn" class="btn btn-primary search-button">Cari Siswa</button>
+            </div>
+        </div>
+
+        <!-- Student Info (hidden by default) -->
+        <div id="studentInfo" class="student-info hidden">
+            <p><strong>Nama:</strong> <span id="studentName"></span></p>
+            <p><strong>Kelas:</strong> <span id="studentClass"></span></p>
+            <p><strong>Asrama:</strong> <span id="studentAsrama"></span></p>
+        </div>
+
+        <!-- Form Fields -->
+        <div class="form-group">
+            <label class="form-label">NISN</label>
+            <input type="text" id="nisn" class="form-input" placeholder="NISN" disabled>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Nama Ijazah</label>
+            <input type="text" id="namaIjazah" class="form-input" placeholder="Nama Ijazah" disabled>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">TTL</label>
+            <input type="text" id="ttl" class="form-input" placeholder="Tuban, 17 Agustus 1945" disabled>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Nama Wali</label>
+            <input type="text" id="waliIjazah" class="form-input" placeholder="Nama Wali" disabled>
+        </div>
+
+        <!-- Cek Berkas Button -->
+        <button id="cekBerkasBtn" class="btn btn-secondary btn-full" disabled>Cek Berkas</button>
+
+        <!-- Grades Grid -->
+        <div class="grades-grid">
+            <div class="grade-item">
+                <label id="tauhidLabel" class="grade-label hidden">Tauhid</label>
+                <input type="text" id="tauhid" class="form-input grade-input" placeholder="Tauhid" readonly>
+            </div>
+            <div class="grade-item">
+                <label id="akhlaqLabel" class="grade-label hidden">Akhlaq</label>
+                <input type="text" id="akhlaq" class="form-input grade-input" placeholder="Akhlaq" readonly>
+            </div>
+            <div class="grade-item">
+                <label id="tafsirLabel" class="grade-label hidden">Tafsir</label>
+                <input type="text" id="tafsir" class="form-input grade-input" placeholder="Tafsir" readonly>
+            </div>
+            <div class="grade-item">
+                <label id="haditsLabel" class="grade-label hidden">Hadits</label>
+                <input type="text" id="hadits" class="form-input grade-input" placeholder="Hadits" readonly>
+            </div>
+            <div class="grade-item">
+                <label id="fiqhLabel" class="grade-label hidden">Fiqih</label>
+                <input type="text" id="fiqh" class="form-input grade-input" placeholder="Fiqih" readonly>
+            </div>
+            <div class="grade-item">
+                <label id="nahwuLabel" class="grade-label hidden">Nahwu</label>
+                <input type="text" id="nahwu" class="form-input grade-input" placeholder="Nahwu" readonly>
+            </div>
+            <div class="grade-item">
+                <label id="shorofLabel" class="grade-label hidden">Shorof</label>
+                <input type="text" id="shorof" class="form-input grade-input" placeholder="Shorof" readonly>
+            </div>
+            <div class="grade-item">
+                <label id="bArabLabel" class="grade-label hidden">B. Arab</label>
+                <input type="text" id="bArab" class="form-input grade-input" placeholder="B. Arab" readonly>
+            </div>
+            <div class="grade-item">
+                <label id="tarikhLabel" class="grade-label hidden">Tarikh</label>
+                <input type="text" id="tarikh" class="form-input grade-input" placeholder="Tarikh" readonly>
+            </div>
+            <div class="grade-item">
+                <label id="faroidlLabel" class="grade-label hidden">Faroidl</label>
+                <input type="text" id="faroidl" class="form-input grade-input" placeholder="Faroidl" readonly>
+            </div>
+            <div class="grade-item">
+                <label id="jumlahLabel" class="grade-label hidden">Jumlah</label>
+                <input type="text" id="jumlah" class="form-input grade-input" placeholder="Jumlah" readonly>
+            </div>
+            <div class="grade-item">
+                <label id="rataRataLabel" class="grade-label hidden">Rata Rata</label>
+                <input type="text" id="rataRata" class="form-input grade-input" placeholder="Rata Rata" readonly>
+            </div>
+        </div>
+
+        <!-- Status Buttons -->
+        <div class="status-buttons">
+            <button id="sudahDitulisBtn" class="btn btn-secondary btn-full" disabled>Sudah Ditulis</button>
+            <button id="kesalahanDataBtn" class="btn btn-secondary btn-full" disabled>Kesalahan Data</button>
+        </div>
+
+        <!-- Error Checkboxes (hidden by default) -->
+        <div id="errorCheckboxes" class="checkbox-list hidden">
+            <div class="checkbox-item" data-error="kesalahanInduk">
+                <span>Kesalahan Induk</span>
+                <div class="custom-checkbox"></div>
+            </div>
+            <div class="checkbox-item" data-error="kesalahanNisn">
+                <span>Kesalahan NISN</span>
+                <div class="custom-checkbox"></div>
+            </div>
+            <div class="checkbox-item" data-error="kesalahanNama">
+                <span>Kesalahan Nama</span>
+                <div class="custom-checkbox"></div>
+            </div>
+            <div class="checkbox-item" data-error="kesalahanTtl">
+                <span>Kesalahan TTL</span>
+                <div class="custom-checkbox"></div>
+            </div>
+            <div class="checkbox-item" data-error="kesalahanNamaWali">
+                <span>Kesalahan Nama Wali</span>
+                <div class="custom-checkbox"></div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button id="saveBtn" class="btn btn-primary" disabled>Simpan</button>
+            <button id="deleteBtn" class="btn btn-danger" disabled>Hapus</button>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let selectedStudent = null;
+        let sudahDitulis = false;
+        let showErrorCheckboxes = false;
+        let errorFlags = {
+            kesalahanInduk: false,
+            kesalahanNisn: false,
+            kesalahanNama: false,
+            kesalahanTtl: false,
+            kesalahanNamaWali: false
+        };
+        let gasWebAppUrl = '';
+
+        // DOM Elements
+        const elements = {
+            gasWebAppUrl: document.getElementById('gasWebAppUrl'),
+            testConnection: document.getElementById('testConnection'),
+            connectionStatus: document.getElementById('connectionStatus'),
+            searchTerm: document.getElementById('searchTerm'),
+            searchBtn: document.getElementById('searchBtn'),
+            studentInfo: document.getElementById('studentInfo'),
+            studentName: document.getElementById('studentName'),
+            studentClass: document.getElementById('studentClass'),
+            studentAsrama: document.getElementById('studentAsrama'),
+            nisn: document.getElementById('nisn'),
+            namaIjazah: document.getElementById('namaIjazah'),
+            ttl: document.getElementById('ttl'),
+            waliIjazah: document.getElementById('waliIjazah'),
+            cekBerkasBtn: document.getElementById('cekBerkasBtn'),
+            sudahDitulisBtn: document.getElementById('sudahDitulisBtn'),
+            kesalahanDataBtn: document.getElementById('kesalahanDataBtn'),
+            errorCheckboxes: document.getElementById('errorCheckboxes'),
+            saveBtn: document.getElementById('saveBtn'),
+            deleteBtn: document.getElementById('deleteBtn')
+        };
+
+        // Grade fields
+        const gradeFields = ['tauhid', 'akhlaq', 'tafsir', 'hadits', 'fiqh', 'nahwu', 'shorof', 'bArab', 'tarikh', 'faroidl', 'jumlah', 'rataRata'];
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 3000);
+        }
+
+        // Load saved configuration
+        function loadConfig() {
+            const saved = localStorage.getItem('gasWebAppUrl');
+            if (saved) {
+                elements.gasWebAppUrl.value = saved;
+                gasWebAppUrl = saved;
+                updateConnectionStatus('connected');
+            }
+        }
+
+        // Update connection status
+        function updateConnectionStatus(status) {
+            const statusEl = elements.connectionStatus;
+            if (status === 'connected') {
+                statusEl.textContent = 'Terhubung';
+                statusEl.className = 'config-status connected';
+            } else {
+                statusEl.textContent = 'Belum Terhubung';
+                statusEl.className = 'config-status disconnected';
+            }
+        }
+
+        // Test connection to Google Apps Script
+        async function testConnection() {
+            const url = elements.gasWebAppUrl.value.trim();
+            if (!url) {
+                showToast('Masukkan URL Google Apps Script terlebih dahulu!', 'error');
+                return;
+            }
+
+            try {
+                setLoading(true);
+                const response = await fetch(url + '?action=test', {
+                    method: 'GET',
+                    mode: 'no-cors' // Required for GAS
+                });
+                
+                // Since we can't read response with no-cors, we assume success
+                gasWebAppUrl = url;
+                localStorage.setItem('gasWebAppUrl', url);
+                updateConnectionStatus('connected');
+                showToast('Koneksi berhasil!');
+            } catch (error) {
+                console.error('Connection test failed:', error);
+                showToast('Gagal terhubung ke Google Apps Script', 'error');
+                updateConnectionStatus('disconnected');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // Call Google Apps Script function
+        async function callGAS(action, data = {}) {
+            if (!gasWebAppUrl) {
+                showToast('Konfigurasikan koneksi Google Apps Script terlebih dahulu!', 'error');
+                return null;
+            }
+
+            try {
+                const payload = {
+                    action: action,
+                    ...data
+                };
+
+                const response = await fetch(gasWebAppUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                return await response.json();
+            } catch (error) {
+                console.error('GAS call failed:', error);
+                throw error;
+            }
+        }
+
+        function setLoading(isLoading) {
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => {
+                btn.disabled = isLoading;
+                if (isLoading) {
+                    btn.classList.add('loading');
+                } else {
+                    btn.classList.remove('loading');
+                    updateButtonStates();
+                }
+            });
+        }
+
+        function updateButtonStates() {
+            const hasStudent = selectedStudent !== null;
+            
+            elements.nisn.disabled = !hasStudent;
+            elements.namaIjazah.disabled = !hasStudent;
+            elements.ttl.disabled = !hasStudent;
+            elements.waliIjazah.disabled = !hasStudent;
+            
+            elements.cekBerkasBtn.disabled = !hasStudent || !selectedStudent?.cekBerkas;
+            elements.cekBerkasBtn.className = `btn btn-full ${
+                hasStudent && selectedStudent?.cekBerkas ? 'btn-primary' : 'btn-secondary'
+            }`;
+            
+            elements.sudahDitulisBtn.disabled = !hasStudent;
+            elements.sudahDitulisBtn.className = `btn btn-full ${
+                sudahDitulis ? 'btn-primary' : 'btn-secondary'
+            }`;
+            
+            elements.kesalahanDataBtn.disabled = !hasStudent;
+            elements.kesalahanDataBtn.className = `btn btn-full ${
+                showErrorCheckboxes ? 'btn-danger' : 'btn-secondary'
+            }`;
+            
+            elements.saveBtn.disabled = !hasStudent;
+            elements.deleteBtn.disabled = !hasStudent;
+            
+            // Keep connection button always enabled
+            elements.testConnection.disabled = false;
+        }
+
+        function populateStudentData(student) {
+            selectedStudent = student;
+            
+            // Show student info
+            elements.studentInfo.classList.remove('hidden');
+            elements.studentName.textContent = student.nama;
+            elements.studentClass.textContent = student.kelas;
+            elements.studentAsrama.textContent = student.asrama;
+            
+            // Populate form fields
+            elements.nisn.value = student.nisn || '';
+            elements.namaIjazah.value = student.namaIjazah || '';
+            elements.ttl.value = student.ttl || '';
+            elements.waliIjazah.value = student.waliIjazah || '';
+            
+            // Populate grades and show labels if values exist
+            gradeFields.forEach(field => {
+                const input = document.getElementById(field);
+                const label = document.getElementById(field + 'Label');
+                const value = student[field];
+                
+                if (value !== null && value !== undefined && value !== '') {
+                    input.value = value;
+                    if (label) label.classList.remove('hidden');
+                } else {
+                    input.value = '';
+                    if (label) label.classList.add('hidden');
+                }
+            });
+            
+            // Set error flags
+            errorFlags = {
+                kesalahanInduk: student.kesalahanInduk || false,
+                kesalahanNisn: student.kesalahanNisn || false,
+                kesalahanNama: student.kesalahanNama || false,
+                kesalahanTtl: student.kesalahanTtl || false,
+                kesalahanNamaWali: student.kesalahanNamaWali || false
+            };
+            
+            sudahDitulis = student.sudahDitulis || false;
+            showErrorCheckboxes = false;
+            elements.errorCheckboxes.classList.add('hidden');
+            
+            updateErrorCheckboxes();
+            updateButtonStates();
+        }
+
+        function clearData() {
+            selectedStudent = null;
+            
+            // Hide student info
+            elements.studentInfo.classList.add('hidden');
+            
+            // Clear form fields
+            elements.nisn.value = '';
+            elements.namaIjazah.value = '';
+            elements.ttl.value = '';
+            elements.waliIjazah.value = '';
+            elements.searchTerm.value = '';
+            
+            // Clear grades and hide labels
+            gradeFields.forEach(field => {
+                const input = document.getElementById(field);
+                const label = document.getElementById(field + 'Label');
+                input.value = '';
+                if (label) label.classList.add('hidden');
+            });
+            
+            // Reset flags
+            errorFlags = {
+                kesalahanInduk: false,
+                kesalahanNisn: false,
+                kesalahanNama: false,
+                kesalahanTtl: false,
+                kesalahanNamaWali: false
+            };
+            
+            sudahDitulis = false;
+            showErrorCheckboxes = false;
+            elements.errorCheckboxes.classList.add('hidden');
+            
+            updateErrorCheckboxes();
+            updateButtonStates();
+        }
+
+        function updateErrorCheckboxes() {
+            document.querySelectorAll('.checkbox-item').forEach(item => {
+                const errorType = item.dataset.error;
+                const checkbox = item.querySelector('.custom-checkbox');
+                const isChecked = errorFlags[errorType];
+                
+                if (isChecked) {
+                    checkbox.classList.add('checked');
+                    item.classList.add('error');
+                } else {
+                    checkbox.classList.remove('checked');
+                    item.classList.remove('error');
+                }
+            });
+        }
+
+        function toggleErrorFlag(errorType) {
+            errorFlags[errorType] = !errorFlags[errorType];
+            updateErrorCheckboxes();
+        }
+
+        async function handleSearch() {
+            const noInduk = elements.searchTerm.value.trim();
+            if (!noInduk) {
+                showToast('Masukkan nomor induk!', 'error');
+                return;
+            }
+
+            setLoading(true);
+            
+            try {
+                const result = await callGAS('searchStudent', { noInduk });
+                
+                if (result && result.success) {
+                    populateStudentData(result.student);
+                    showToast('Data siswa ditemukan!');
+                } else {
+                    clearData();
+                    showToast('Data siswa tidak ditemukan!', 'error');
+                }
+            } catch (error) {
+                showToast('Gagal mencari data siswa', 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function handleCekBerkas() {
+            if (selectedStudent && selectedStudent.cekBerkas) {
+                window.open(selectedStudent.cekBerkas, '_blank');
+            } else {
+                showToast('File berkas tidak tersedia!', 'warning');
+            }
+        }
+
+        function toggleSudahDitulis() {
+            sudahDitulis = !sudahDitulis;
+            updateButtonStates();
+        }
+
+        function toggleErrorCheckboxes() {
+            showErrorCheckboxes = !showErrorCheckboxes;
+            if (showErrorCheckboxes) {
+                elements.errorCheckboxes.classList.remove('hidden');
+            } else {
+                elements.errorCheckboxes.classList.add('hidden');
+            }
+            updateButtonStates();
+        }
+
+        async function handleSave() {
+            if (!selectedStudent) {
+                showToast('Pilih siswa terlebih dahulu!', 'error');
+                return;
+            }
+
+            const updateData = {
+                noInduk: selectedStudent.noInduk,
+                namaIjazah: elements.namaIjazah.value,
+                waliIjazah: elements.waliIjazah.value,
+                nisn: elements.nisn.value,
+                ttl: elements.ttl.value,
+                sudahDitulis: sudahDitulis,
+                ...errorFlags
+            };
+
+            setLoading(true);
+            
+            try {
+                const result = await callGAS('saveStudent', updateData);
+                
+                if (result && result.success) {
+                    showToast('Data berhasil disimpan!');
+                } else {
+                    showToast('Gagal menyimpan data!', 'error');
+                }
+            } catch (error) {
+                showToast('Gagal menyimpan data siswa', 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function handleDelete() {
+            if (!selectedStudent) {
+                showToast('Pilih siswa terlebih dahulu!', 'error');
+                return;
+            }
+
+            if (!confirm(`Apakah Anda yakin ingin menghapus data siswa ${selectedStudent.nama} (${selectedStudent.noInduk})?`)) {
+                return;
+            }
+
+            setLoading(true);
+            
+            try {
+                const result = await callGAS('deleteStudent', { noInduk: selectedStudent.noInduk });
+                
+                if (result && result.success) {
+                    clearData();
+                    showToast('Data berhasil dihapus!');
+                } else {
+                    showToast('Gagal menghapus data!', 'error');
+                }
+            } catch (error) {
+                showToast('Gagal menghapus data siswa', 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // Event Listeners
+        elements.testConnection.addEventListener('click', testConnection);
+        elements.searchBtn.addEventListener('click', handleSearch);
+        elements.cekBerkasBtn.addEventListener('click', handleCekBerkas);
+        elements.sudahDitulisBtn.addEventListener('click', toggleSudahDitulis);
+        elements.kesalahanDataBtn.addEventListener('click', toggleErrorCheckboxes);
+        elements.saveBtn.addEventListener('click', handleSave);
+        elements.deleteBtn.addEventListener('click', handleDelete);
+
+        // Checkbox event listeners
+        document.querySelectorAll('.custom-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', function() {
+                const errorType = this.closest('.checkbox-item').dataset.error;
+                toggleErrorFlag(errorType);
+            });
+        });
+
+        // Input change listeners for form fields
+        ['nisn', 'namaIjazah', 'ttl', 'waliIjazah'].forEach(field => {
+            elements[field].addEventListener('input', function() {
+                // Form data is automatically updated when user types
+            });
+        });
+
+        // Enter key support for search
+        elements.searchTerm.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+
+        // Initialize
+        loadConfig();
+        updateButtonStates();
+    </script>
+</body>
+</html>

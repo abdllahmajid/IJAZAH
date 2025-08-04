@@ -1,0 +1,30 @@
+{
+  "name": "data-ijazah-github-pages",
+  "version": "1.0.0",
+  "description": "Aplikasi web Data Ijazah untuk GitHub Pages dengan integrasi Google Apps Script",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "npx serve .",
+    "build": "echo 'Static site - no build required'",
+    "deploy": "gh-pages -d ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/data-ijazah.git"
+  },
+  "keywords": [
+    "education",
+    "student-data",
+    "google-apps-script",
+    "github-pages",
+    "responsive-web-app"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "gh-pages": "^6.1.1",
+    "serve": "^14.2.1"
+  },
+  "homepage": "https://your-username.github.io/data-ijazah"
+}
